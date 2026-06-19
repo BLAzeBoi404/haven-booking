@@ -15,8 +15,8 @@ export interface SessionUser {
   role: Role;
 }
 
-/** Мова інтерфейсу (uk/en/de/es). */
-export type Lang = "uk" | "en" | "de" | "es";
+/** Мова інтерфейсу (uk/en). */
+export type Lang = "uk" | "en";
 
 /** Валюта відображення цін. */
 export type Currency = "UAH" | "USD" | "EUR" | "GBP";

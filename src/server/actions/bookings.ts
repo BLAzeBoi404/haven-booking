@@ -10,7 +10,7 @@ import { Role } from "@prisma/client";
 import type { BookingItem } from "@/types";
 
 function fail(error: string, fieldErrors?: Record<string, string[]>) {
-  return { ok: false as const, error, fieldErrors };
+  return { ok: false as const, error, fieldErrors, collision: undefined as undefined };
 }
 
 export async function createBooking(input: unknown) {

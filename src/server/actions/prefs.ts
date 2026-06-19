@@ -19,7 +19,7 @@ export async function setPrefs(key: "lang" | "currency", value: string) {
 export async function getPrefsFromCookies() {
   const store = await cookies();
   return {
-    lang: (store.get("haven_lang")?.value as "uk" | "en" | "de" | "es") ?? "uk",
+    lang: (store.get("haven_lang")?.value as "uk" | "en") ?? "uk",
     currency: (store.get("haven_currency")?.value as "UAH" | "USD" | "EUR" | "GBP") ?? "UAH",
   };
 }

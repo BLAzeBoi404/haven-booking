@@ -1,5 +1,5 @@
 // =====================================================================
-//  i18n-словник HAVEN (uk/en/de/es) — перенесено з прототипу App.jsx.
+//  i18n-словник HAVEN (uk/en) — перенесено з прототипу App.jsx.
 // =====================================================================
 
 import type { Lang } from "@/types";
@@ -75,8 +75,6 @@ export const T = {
     editProfile: "Редагувати профіль", bioLabel: "Про себе", phoneLabel: "Телефон",
     specLabel: "Спеціалізація", saveProfile: "Зберегти профіль", profileSaved: "Профіль оновлено!",
     optimisticMsg: "Бронювання відправлено…",
-    // --- Ролі ---
-    adminRole: "Адмін",
     // --- Футер ---
     tagline: "Платформа для пошуку перевірених фахівців.",
     footerCompany: "Компанія", footerSupport: "Підтримка", footerLegal: "Умови",
@@ -142,6 +140,8 @@ export const T = {
     experience: "Experience", completedJobs: "Jobs done", successRate: "Success",
     myProfile: "My Profile", comment: "Comment", commentPh: "Add details or special requests…",
     stat1: "60+ specialists", stat2: "1M+ bookings", stat3: "98% satisfied", stat4: "24/7 support",
+    statBookings: "Total bookings", statConfirmed: "Confirmed", statCancelled: "Cancelled",
+    statProviders: "Specialists", statClients: "Clients", statRevenue: "Revenue",
     heroLine1: "Find the perfect", heroLine2: "specialist",
     heroSub: "Verified professionals. Cleaning, repairs, IT, design and 10 more categories.",
     servicesSection: "All Services", allServices: "All Services", back: "Back", showMore: "Show more",
@@ -180,8 +180,6 @@ export const T = {
     editProfile: "Edit Profile", bioLabel: "About", phoneLabel: "Phone",
     specLabel: "Specialization", saveProfile: "Save Profile", profileSaved: "Profile updated!",
     optimisticMsg: "Booking sent…",
-    // --- Roles ---
-    adminRole: "Admin",
     // --- Footer ---
     tagline: "Platform for finding verified specialists.",
     footerCompany: "Company", footerSupport: "Support", footerLegal: "Terms",
@@ -217,8 +215,6 @@ export const T = {
     errorTitle: "Something went wrong", errorDesc: "Try refreshing the page.", errorRetry: "Try again",
     legalData: "Legal details",
   },
-  de: {},
-  es: {},
 };
 
 export type Dict = (typeof T)["uk"];
