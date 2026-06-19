@@ -18,7 +18,7 @@ const prisma = new PrismaClient();
 // (src/lib/images.ts). Цей джерело НІКОЛИ не віддає 404/blocked, тож фото
 // сантехніків та всіх інших категорій гарантовано показується, а галерея
 // деталі послуги отримує 6 різних фото однієї теми.
-import { galleryImages } from "../src/lib/images.ts";
+import { galleryImages } from "../src/lib/images";
 
 const IMGS: Record<string, string[]> = {};
 const SPECS_ALL = [

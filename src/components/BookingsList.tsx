@@ -1,7 +1,3 @@
-// =====================================================================
-//  BookingsList — список бронювань клієнта з Optimistic-скасуванням.
-// =====================================================================
-
 "use client";
 
 import { useState } from "react";
@@ -18,7 +14,6 @@ export function BookingsList({ bookings, lang, currency }: { bookings: BookingIt
   const [list, setList] = useState(bookings);
 
   const doCancel = async (id: string) => {
-    // Optimistic: одразу позначаємо скасованим, потім підтверджуємо сервером
     setList((prev) => prev.map((b) => (b.id === id ? { ...b, status: "CANCELLED_USER" as const } : b)));
     await cancelBooking(id);
   };

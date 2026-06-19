@@ -1,11 +1,3 @@
-// =====================================================================
-//  Декларативна валідація вхідних даних через Zod (§3.3 диплома)
-//
-//  Кожен Server Action починається з .safeParse(). Це ліквідує необхідність
-//  try/catch для невалідних даних і блокує пошкоджені/зловмисні запити
-//  ДО того, як вони досягнуть транзакційного ядра PostgreSQL.
-// =====================================================================
-
 import { z } from "zod";
 
 export const registerSchema = z
@@ -14,7 +6,6 @@ export const registerSchema = z
     email: z.string().email("Невірний формат email"),
     password: z.string().min(6, "Мінімум 6 символів").max(100),
     role: z.enum(["CLIENT", "PROVIDER"]),
-    // Поля фахівця (опціональні, валідуються лише для PROVIDER)
     country: z.string().max(60).optional(),
     city: z.string().max(60).optional(),
     legalType: z.string().max(40).optional(),
@@ -33,8 +24,8 @@ export const loginSchema = z.object({
 export const bookingSchema = z.object({
   serviceId: z.string().min(1),
   providerId: z.string().min(1),
-  date: z.string().min(1),   // ISO-дата
-  time: z.string().min(1),   // "HH:mm"
+  date: z.string().min(1),   
+  time: z.string().min(1),   
   comment: z.string().max(600).optional().or(z.literal("")),
 });
 

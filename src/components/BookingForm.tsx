@@ -1,12 +1,3 @@
-// =====================================================================
-//  BookingForm — Optimistic UI через useOptimistic + useTransition (§2.6/§3.4)
-//
-//  Клієнт бачить підтвердження бронювання за ~16мс (1 фрейм), ще ДО того,
-//  як PostgreSQL фізично зафіксує ACID-транзакцію. Якщо виникає колізія
-//  (слот перехоплено конкурентною транзакцією), React ТИХО відкочує
-//  DOM до попереднього стану + тостер «Слот перехоплено».
-// =====================================================================
-
 "use client";
 
 import { useState, useOptimistic, useTransition } from "react";
@@ -32,7 +23,6 @@ interface Props {
 
 const SLOTS = ["09:00", "10:00", "11:00", "13:00", "15:00", "17:00"];
 
-// Оптимистичний стан: який «крок» ми показуємо юзеру миттєво
 type OptimisticState = { step: number; collision: boolean };
 
 export function BookingForm({ serviceId, providerId, serviceTitle, providerName, priceUSD, lang, currency, onDone, onClose }: Props) {
@@ -46,7 +36,6 @@ export function BookingForm({ serviceId, providerId, serviceTitle, providerName,
   const [time, setTime] = useState("10:00");
   const [comment, setComment] = useState("");
 
-  // Optimistic UI — миттєвий відгук інтерфейсу
   const [optimistic, setOptimistic] = useOptimistic<OptimisticState, Partial<OptimisticState>>(
     { step, collision: false },
     (state, next) => ({ ...state, ...next }),
@@ -56,30 +45,26 @@ export function BookingForm({ serviceId, providerId, serviceTitle, providerName,
   const dLabel = { today: t.today, tomorrow: t.tomorrow, nextWeek: t.nextWeek };
 
   const confirm = () => {
-    // useTransition + useOptimistic: UI мутує миттєво, далі йде Server Action
     startTransition(async () => {
-      setOptimistic({ step: 2, collision: false }); // показуємо «Бронювання відправлено…» за 1 фрейм
+      setOptimistic({ step: 2, collision: false });
       try {
         const res = await createBooking({ serviceId, providerId, date, time, comment });
         if (res.ok) {
           setStep(3);
           return;
         }
-        // Слот зайнятий → показуємо collision-стан
         if (res.collision) {
           setStep(1);
           setOptimistic({ step: 1, collision: true });
           return;
         }
-        // Інша помилка (зокрема «необхідно увійти») → повертаємось до кроку 1
-        // і пробуємо перевести користувача на логін.
+
         setStep(1);
         setOptimistic({ step: 1, collision: false });
         if (/війти|login|sign in|увійти|систем[іи]|sign up|register|зареєструватися/i.test(res.error)) {
           window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
         }
       } catch {
-        // Серверна помилка мережі/RPC — відкочуємо optimistic.
         setStep(1);
         setOptimistic({ step: 1, collision: false });
       }
@@ -92,7 +77,6 @@ export function BookingForm({ serviceId, providerId, serviceTitle, providerName,
     </div>
   );
 
-  // Крок 3 — успіх
   if (optimistic.step >= 3 || step === 3) {
     return (
       <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-4 fade-in">
@@ -134,7 +118,6 @@ export function BookingForm({ serviceId, providerId, serviceTitle, providerName,
         )}
 
         <div className="p-6 overflow-y-auto no-scrollbar">
-          {/* Крок 0 — вибір дати/часу */}
           {step === 0 && (
             <>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">{t.selectDate}</p>
@@ -159,7 +142,6 @@ export function BookingForm({ serviceId, providerId, serviceTitle, providerName,
             </>
           )}
 
-          {/* Крок 1 — підтвердження / Optimistic крок 2 */}
           {(step === 1 || optimistic.step === 2) && (
             <>
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 mb-5">
@@ -214,7 +196,6 @@ export function BookingForm({ serviceId, providerId, serviceTitle, providerName,
   );
 }
 
-/** Обчислити ISO-дату для пресету. */
 function computeDate(preset: "today" | "tomorrow" | "nextWeek"): string {
   const d = new Date();
   if (preset === "tomorrow") d.setDate(d.getDate() + 1);

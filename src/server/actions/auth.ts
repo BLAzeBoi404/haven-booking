@@ -1,8 +1,3 @@
-// =====================================================================
-//  Auth Server Actions — реєстрація / вхід / вихід (§3.3, §3.5)
-//  bcryptjs хешує паролі; при успіху створюється http-only JWT cookie.
-// =====================================================================
-
 "use server";
 
 import { redirect } from "next/navigation";
@@ -29,8 +24,6 @@ export async function register(input: unknown) {
   if (exists) return { ok: false as const, error: "Email вже зареєстрований." };
 
   const passwordHash = await bcrypt.hash(password, 10);
-
-  // Адмін зареєрований у сіді; якщо хтось реєструється під адмінською поштою — це клієнт.
   const finalRole: Role = email === ADMIN_EMAIL ? Role.CLIENT : role;
 
   const user = await prisma.user.create({
@@ -52,7 +45,6 @@ export async function register(input: unknown) {
     },
   });
 
-  // Для фахівця одразу створюємо стартову послугу-візитку
   if (finalRole === Role.PROVIDER) {
     await prisma.service.create({
       data: {
