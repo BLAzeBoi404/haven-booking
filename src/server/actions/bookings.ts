@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "../db";
 import { requireUser, AuthError } from "../auth-guard";
 import { bookingSchema } from "@/lib/validations";
+import { parseWorkingHours } from "@/lib/schedule";
 import { notifyProvider } from "../email";
 import { Role } from "@prisma/client";
 import type { BookingItem } from "@/types";
@@ -35,6 +36,13 @@ export async function createBooking(input: unknown) {
     include: { provider: true },
   });
   if (!service) return fail("Послугу не знайдено.");
+
+  // Перевірка, що обраний час потрапляє у робочий графік фахівця
+  const { start, end } = parseWorkingHours(service.provider.workingHours);
+  const hour = parseInt(time.split(":")[0], 10);
+  if (isNaN(hour) || hour < start || hour >= end) {
+    return fail(`Фахівець працює з ${String(start).padStart(2, "0")}:00 до ${String(end).padStart(2, "0")}:00.`);
+  }
 
   try {
     const booking = await prisma.$transaction(async (tx) => {
@@ -128,5 +136,14 @@ export async function getMyBookings(): Promise<BookingItem[]> {
     status: b.status,
     createdAt: b.createdAt,
   }));
+}
+
+/** Зайняті слоти фахівця на вказану дату (для UI бронювання). */
+export async function getBookedSlots(providerId: string, date: string): Promise<string[]> {
+  const rows = await prisma.booking.findMany({
+    where: { providerId, date, status: "CONFIRMED" },
+    select: { time: true },
+  });
+  return rows.map((r) => r.time);
 }
 

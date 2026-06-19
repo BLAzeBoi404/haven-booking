@@ -57,11 +57,13 @@ export interface ProviderSummary {
   reviewsCount: number;
   successRate: number;
   experience: string | null;
+  workingHours: string;
 }
 
 /** Один відгук (plain-серіалізований). */
 export interface ReviewItem {
   id: string;
+  authorId: string | null;
   authorName: string;
   rating: number;
   text: string;

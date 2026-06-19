@@ -3,11 +3,22 @@
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { prisma } from "../db";
-import { createSession, clearSession } from "../session";
+import { createSession, clearSession, getOrCreateDeviceId } from "../session";
 import { registerSchema, loginSchema } from "@/lib/validations";
 import { Role } from "@prisma/client";
 
 const ADMIN_EMAIL = "admin@gmail.com";
+
+/** Привʼязати аккаунт до поточного пристрою (асинхронно, без очікування). */
+function linkDeviceAccount(userId: string, email: string, name: string, role: string) {
+  getOrCreateDeviceId().then((deviceId) =>
+    prisma.deviceAccount.upsert({
+      where: { deviceId_userId: { deviceId, userId } },
+      create: { deviceId, userId, email, name, role },
+      update: {},
+    }).catch(() => { /* не критично */ }),
+  );
+}
 
 export async function register(input: unknown) {
   const parsed = registerSchema.safeParse(input);
@@ -59,6 +70,7 @@ export async function register(input: unknown) {
   }
 
   await createSession({ id: user.id, email: user.email, name: user.name, role: user.role });
+  linkDeviceAccount(user.id, user.email, user.name, user.role);
   redirect("/");
 }
 
@@ -82,6 +94,7 @@ export async function login(input: unknown) {
   if (user.blocked) return { ok: false as const, error: "Акаунт заблоковано адміністратором." };
 
   await createSession({ id: user.id, email: user.email, name: user.name, role: user.role });
+  linkDeviceAccount(user.id, user.email, user.name, user.role);
   redirect("/");
 }
 

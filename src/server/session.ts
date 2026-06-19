@@ -84,3 +84,21 @@ export async function verifyToken(token: string): Promise<SessionUser | null> {
 }
 
 export const SESSION_COOKIE = COOKIE_NAME;
+const DEVICE_COOKIE = "haven_device";
+
+/** Отримати або створити ID пристрою (httpOnly cookie, 30 днів).
+ *  Використовується для привʼязки кількох аккаунтів до одного браузера. */
+export async function getOrCreateDeviceId(): Promise<string> {
+  const store = await cookies();
+  const existing = store.get(DEVICE_COOKIE)?.value;
+  if (existing) return existing;
+  const id = crypto.randomUUID();
+  store.set(DEVICE_COOKIE, id, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: MAX_AGE_SECONDS,
+  });
+  return id;
+}

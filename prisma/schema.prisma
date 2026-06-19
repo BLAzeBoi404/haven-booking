@@ -31,12 +31,14 @@ model User {
   completedJobs Int       @default(0)
   successRate   Int       @default(100)
   experience    String?
+  workingHours  String   @default("09:00-18:00")
   createdAt     DateTime  @default(now())
 
   services      Service[]
   clientBookings  Booking[] @relation("ClientBookings")
   providerBookings Booking[] @relation("ProviderBookings")
   reviews       Review[]
+  deviceAccounts DeviceAccount[]
 
   @@index([role])
 }
@@ -94,6 +96,7 @@ model Review {
   text        String
   createdAt   DateTime @default(now())
 
+  @@unique([serviceId, authorId])
   @@index([serviceId])
 }
 
@@ -120,4 +123,19 @@ enum BookingStatus {
   CANCELLED_USER  
   CANCELLED_ADMIN 
   REJECTED        
+}
+
+model DeviceAccount {
+  id         String   @id @default(cuid())
+  deviceId   String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email      String
+  name       String
+  role       String
+  addedAt    DateTime @default(now())
+  lastUsedAt DateTime @updatedAt
+
+  @@unique([deviceId, userId])
+  @@index([deviceId])
 }

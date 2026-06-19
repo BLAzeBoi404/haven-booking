@@ -66,6 +66,9 @@ const SPECS = Object.keys(IMGS);
 const rnd = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
 const rndN = (a: number, b: number) => Math.floor(Math.random() * (b - a + 1)) + a;
 
+// Варіації робочого графіка для демонстрації різних розкладів фахівців
+const WORK_SCHEDULES = ["08:00-17:00", "09:00-18:00", "10:00-19:00", "12:00-20:00", "07:00-15:00"];
+
 /** Перемішати масив фото (Fisher–Yates), щоб картка каталогу images[0]
  *  для кожного фахівця тієї ж категорії показувала РІЗНЕ фото. */
 function shuffled<T>(arr: T[]): T[] {
@@ -130,6 +133,7 @@ async function main() {
       reviewsCount: 42,
       completedJobs: 88,
       successRate: 99,
+      workingHours: "09:00-18:00",
     },
   });
   await prisma.service.create({
@@ -172,6 +176,7 @@ async function main() {
         reviewsCount: rndN(8, 220),
         completedJobs: rndN(15, 450),
         successRate: rndN(92, 100),
+        workingHours: WORK_SCHEDULES[i % WORK_SCHEDULES.length],
       },
     });
 

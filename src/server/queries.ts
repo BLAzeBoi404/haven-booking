@@ -27,12 +27,13 @@ export interface ProviderWithServices extends ProviderProfile {}
 /** Конвертор відгуку → plain-обʼєкт. */
 function toReview(r: {
   id: string;
+  authorId: string | null;
   authorName: string;
   rating: number;
   text: string;
   createdAt: Date;
 }): ReviewItem {
-  return { id: r.id, authorName: r.authorName, rating: Number(r.rating), text: r.text, createdAt: r.createdAt };
+  return { id: r.id, authorId: r.authorId, authorName: r.authorName, rating: Number(r.rating), text: r.text, createdAt: r.createdAt };
 }
 
 /** Конвертор послуги-картки → plain. */
@@ -72,6 +73,7 @@ function toProviderSummary(p: {
   reviewsCount: number;
   successRate: number;
   experience: string | null;
+  workingHours: string;
 }): ProviderSummary {
   return {
     id: p.id,
@@ -88,6 +90,7 @@ function toProviderSummary(p: {
     reviewsCount: p.reviewsCount,
     successRate: p.successRate,
     experience: p.experience,
+    workingHours: p.workingHours,
   };
 }
 

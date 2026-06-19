@@ -24,8 +24,8 @@ export const loginSchema = z.object({
 export const bookingSchema = z.object({
   serviceId: z.string().min(1),
   providerId: z.string().min(1),
-  date: z.string().min(1),   
-  time: z.string().min(1),   
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Невірний формат дати"),
+  time: z.string().regex(/^\d{2}:\d{2}$/, "Невірний формат часу"),
   comment: z.string().max(600).optional().or(z.literal("")),
 });
 

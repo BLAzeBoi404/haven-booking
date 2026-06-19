@@ -131,7 +131,7 @@ export function ServiceDetailClient({
 
             <div className="card p-6">
               <h2 className="display font-bold text-gray-900 mb-4">Відгуки{reviews.length > 0 ? ` (${reviews.length})` : ""}</h2>
-              <ReviewForm serviceId={service.id} lang={lang} />
+              <ReviewForm serviceId={service.id} lang={lang} existing={user ? reviews.find((r) => r.authorId === user.id) ?? null : null} />
               <div className="space-y-4">
                 {reviews.map((r) => (
                   <div key={r.id} className={cn("pb-4", reviews.indexOf(r) < reviews.length - 1 && "border-b border-gray-100")}>
@@ -207,6 +207,7 @@ export function ServiceDetailClient({
           serviceTitle={service.title}
           providerName={provider.name}
           priceUSD={service.priceUSD}
+          workingHours={provider.workingHours}
           lang={lang}
           currency={currency}
           onDone={() => (window.location.href = "/bookings")}

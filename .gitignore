@@ -43,6 +43,7 @@ diagrams/
 REPLACEMENTS.md
 diploma3_text.txt
 diploma_docx_extract.txt
+QUESTIONS_ANSWERS.md
 
 # Windows reserved-name junk files (created by accidental 2>nul / $null redirects)
 nul

@@ -36,15 +36,29 @@ export async function addReview(input: unknown) {
   const service = await prisma.service.findUnique({ where: { id: serviceId } });
   if (!service) return { ok: false as const, error: "Послугу не знайдено." };
 
-  await prisma.review.create({
-    data: {
-      serviceId,
-      authorId: user.id,
-      authorName: user.name,
-      rating,
-      text,
-    },
+  // Один клієнт = один відгук на послугу (upsert замість create).
+  // Це усуває дублювання при подвійному кліку та гонках.
+  const existing = await prisma.review.findUnique({
+    where: { serviceId_authorId: { serviceId, authorId: user.id } },
+    select: { id: true },
   });
+
+  if (existing) {
+    await prisma.review.update({
+      where: { id: existing.id },
+      data: { rating, text, authorName: user.name },
+    });
+  } else {
+    await prisma.review.create({
+      data: {
+        serviceId,
+        authorId: user.id,
+        authorName: user.name,
+        rating,
+        text,
+      },
+    });
+  }
 
   // Перерахунок рейтингу послуги
   const agg = await prisma.review.aggregate({

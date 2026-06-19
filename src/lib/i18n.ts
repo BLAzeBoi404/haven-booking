@@ -11,6 +11,8 @@ export const T = {
     bookNow: "Забронювати", writeMsg: "Написати", msgSent: "Повідомлення надіслано!",
     reviews: "відгуків", verified: "Верифіковано",
     bookingTitle: "Бронювання", selectDate: "Дата", selectTime: "Час",
+    selectDay: "Оберіть день", loadingSlots: "Завантаження слотів…", slotTaken: "Зайнято",
+    workingHoursLabel: "Робочий графік", nextStep: "Далі",
     payment: "Оплата", confirmBook: "Підтвердити бронювання", bookingSuccess: "Бронювання підтверджено!",
     backSearch: "Назад", myBookings: "Мої бронювання", noBookings: "Бронювань поки немає",
     active: "Активне", cancelled: "Скасовано", cancelBook: "Скасувати",
@@ -22,6 +24,7 @@ export const T = {
     save: "Зберегти", cancelBtn: "Скасувати",
     nameLabel: "Ваше імʼя або назва", emailLabel: "Email", passLabel: "Пароль",
     clientRole: "Клієнт", specRole: "Фахівець",
+    switchAccount: "Перемкнути профіль", addAccount: "Додати акаунт",
     welcome: "З поверненням", createAcc: "Реєстрація", signIn: "Увійти", signUp: "Зареєструватися",
     today: "Сьогодні", tomorrow: "Завтра", nextWeek: "Наступного тижня",
     total: "Разом", paymentMethod: "Спосіб оплати",
@@ -104,6 +107,7 @@ export const T = {
     noBookingsHint: "Знайдіть потрібну послугу та зробіть перше бронювання.",
     // --- Відгук / послуги (фахівець) ---
     reviewError: "Сталася помилка. Спробуйте ще раз.", reviewThanks: "✓ Дякуємо за відгук!",
+    editReview: "Редагувати відгук", saveReview: "Зберегти відгук", reviewUpdated: "✓ Відгук оновлено!",
     editTitle: "Редагування", newService: "Нова послуга", photos: "Фото",
     confirmDeleteService: "Видалити послугу?",
     // --- Помилка / завантаження ---
@@ -116,6 +120,8 @@ export const T = {
     bookNow: "Book Now", writeMsg: "Message", msgSent: "Message sent!",
     reviews: "reviews", verified: "Verified",
     bookingTitle: "Booking", selectDate: "Date", selectTime: "Time",
+    selectDay: "Select day", loadingSlots: "Loading slots…", slotTaken: "Booked",
+    workingHoursLabel: "Working hours", nextStep: "Next",
     payment: "Payment", confirmBook: "Confirm Booking", bookingSuccess: "Booking Confirmed!",
     backSearch: "Back", myBookings: "My Bookings", noBookings: "No bookings yet",
     active: "Active", cancelled: "Cancelled", cancelBook: "Cancel",
@@ -127,6 +133,7 @@ export const T = {
     save: "Save", cancelBtn: "Cancel",
     nameLabel: "Your name or company", emailLabel: "Email", passLabel: "Password",
     clientRole: "Client", specRole: "Specialist",
+    switchAccount: "Switch profile", addAccount: "Add account",
     welcome: "Welcome Back", createAcc: "Create Account", signIn: "Sign In", signUp: "Sign Up",
     today: "Today", tomorrow: "Tomorrow", nextWeek: "Next Week",
     total: "Total", paymentMethod: "Payment Method",
@@ -209,6 +216,7 @@ export const T = {
     noBookingsHint: "Find a service and make your first booking.",
     // --- Review / services (provider) ---
     reviewError: "Something went wrong. Please try again.", reviewThanks: "✓ Thank you for your review!",
+    editReview: "Edit review", saveReview: "Save review", reviewUpdated: "✓ Review updated!",
     editTitle: "Editing", newService: "New service", photos: "Photos",
     confirmDeleteService: "Delete service?",
     // --- Error / loading ---
