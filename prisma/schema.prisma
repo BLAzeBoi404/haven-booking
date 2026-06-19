@@ -1,0 +1,153 @@
+// =====================================================================
+//  HAVEN — декларативна схема даних (Single Source of Truth), §3.2 диплома
+//  PostgreSQL + Prisma ORM. Зміна схеми каскадно оновлює TypeScript-типи
+//  до останньої UI-кнопки (наскрізна типізація, §2.3 / §2.5).
+//
+//  Ключові інженерні рішення:
+//   • CUID замість автоінкремента — ліквідація вразливості IDOR (§3.5)
+//   • FK з onDelete: Cascade — цілісність посилань (§2.9.4)
+//   • @@unique([providerId, date, time]) — фізична унеможливлення дублювання слота
+//   • @@index([providerId, date]) — B-Tree для O(log N) вибірки (§2.13)
+// =====================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          Role      @default(CLIENT)
+  specialization String?
+  bio           String?
+  phone         String?
+  country       String?
+  city          String?
+  location      String?
+  legalType     String? 
+  taxId         String?
+  verified      Boolean   @default(false)
+  blocked       Boolean   @default(false)
+  rating        Decimal   @default(5.0) @db.Decimal(3, 1)
+  reviewsCount  Int       @default(0)
+  completedJobs Int       @default(0)
+  successRate   Int       @default(100)
+  experience    String?
+  createdAt     DateTime  @default(now())
+
+  services      Service[]
+  clientBookings  Booking[] @relation("ClientBookings")
+  providerBookings Booking[] @relation("ProviderBookings")
+  reviews       Review[]
+
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------
+//  Послуга фахівця (картка в каталозі)
+// ---------------------------------------------------------------------
+model Service {
+  id          String   @id @default(cuid())
+  providerId  String
+  provider    User     @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  priceUSD    Decimal  @db.Decimal(10, 2)
+  category    String
+  images      String[] @default([])
+  hidden      Boolean  @default(false)
+  rating      Decimal  @default(5.0) @db.Decimal(3, 1)
+  createdAt   DateTime @default(now())
+
+  bookings    Booking[]
+  reviews     Review[]
+
+  @@index([providerId])
+  @@index([category])
+}
+
+// ---------------------------------------------------------------------
+//  Бронювання — критична транзакційна сутність (§2.4 / §3.3)
+//  Саме тут SELECT ... FOR UPDATE NOWAIT гарантує відсутність стану гонки.
+// ---------------------------------------------------------------------
+model Booking {
+  id          String         @id @default(cuid())
+  clientId    String
+  client      User           @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Cascade)
+  providerId  String
+  provider    User           @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     Service        @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceName String
+  providerName String
+  date        String         // ISO-дата слота (напр. "2026-06-16")
+  time        String         // час слоту ("10:00")
+  comment     String?
+  priceUSD    Decimal        @db.Decimal(10, 2)
+  status      BookingStatus  @default(CONFIRMED)
+  createdAt   DateTime       @default(now())
+
+  // ПОДВІЙНА ВАРТА від подвійного бронювання:
+  //   1) унікальний складений constraint (фізичний відбій на рівні DDL)
+  //   2) пессимістичне блокування FOR UPDATE NOWAIT у Server Action
+  @@unique([providerId, date, time])
+  @@index([providerId, date])   // B-Tree для швидкої перевірки слота, §2.13
+  @@index([clientId])
+}
+
+// ---------------------------------------------------------------------
+//  Відгук клієнта про послугу
+// ---------------------------------------------------------------------
+model Review {
+  id          String   @id @default(cuid())
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorName  String
+  rating      Int
+  text        String
+  createdAt   DateTime @default(now())
+
+  @@index([serviceId])
+}
+
+// ---------------------------------------------------------------------
+//  Повідомлення клієнт → фахівець
+// ---------------------------------------------------------------------
+model Message {
+  id        String   @id @default(cuid())
+  fromId    String?
+  fromName  String
+  toProviderId String
+  text      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([toProviderId])
+}
+
+// ---------------------------------------------------------------------
+//  Словники-переліки (PostgreSQL ENUM)
+// ---------------------------------------------------------------------
+enum Role {
+  CLIENT
+  PROVIDER
+  ADMIN
+}
+
+enum BookingStatus {
+  CONFIRMED       // підтверджено (активне)
+  CANCELLED_USER  // скасовано клієнтом
+  CANCELLED_ADMIN // скасовано адміністратором
+  REJECTED        // слот перехоплено конкурентною транзакцією
+}
