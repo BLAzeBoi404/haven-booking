@@ -7,7 +7,7 @@ import { LANGS, CURRENCY_LIST } from "@/lib/currency";
 import { getT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Avatar, Spinner } from "./primitives";
-import { logout } from "@/server/actions/auth";
+import { logout, logoutToLogin } from "@/server/actions/auth";
 import { getLinkedAccounts, switchAccount, type LinkedAccount } from "@/server/actions/accounts";
 import type { SessionUser } from "@/types";
 import { usePrefs } from "./PrefsProvider";
@@ -161,9 +161,9 @@ export function Header({ user }: { user: SessionUser | null }) {
 
                       {/* Действия */}
                       <div className="py-1">
-                        <Link href="/login" onClick={closeAll} className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <button onClick={() => { closeAll(); logoutToLogin(); }} className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2">
                           + {t.addAccount}
-                        </Link>
+                        </button>
                         <button onClick={() => { closeAll(); logout(); }} className="w-full text-left px-3 py-2 text-sm text-rose-500 hover:bg-rose-50 transition-colors flex items-center gap-2">
                           <LogOut className="w-3.5 h-3.5" />{t.logout}
                         </button>
@@ -213,7 +213,7 @@ export function Header({ user }: { user: SessionUser | null }) {
                   {switchingId === acc.id && <Spinner />}
                 </button>
               ))}
-              <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-emerald-700 block">+ {t.addAccount}</Link>
+              <button onClick={() => { setMenuOpen(false); logoutToLogin(); }} className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-emerald-700 block">+ {t.addAccount}</button>
               <Link href="/bookings" onClick={() => setMenuOpen(false)} className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-gray-700 block">{t.myBookings}</Link>
               {user.role === "PROVIDER" && <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-gray-700 block">{t.myProfile}</Link>}
               {user.role === "ADMIN" && <Link href="/admin" onClick={() => setMenuOpen(false)} className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-rose-50 text-sm font-medium text-rose-500 block">{t.adminPanel}</Link>}

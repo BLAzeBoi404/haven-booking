@@ -102,3 +102,10 @@ export async function logout() {
   await clearSession();
   redirect("/");
 }
+
+/** Вийти з поточного аккаунта і перейти на сторінку входу
+ *  (для додавання нового профілю до цього пристрою). */
+export async function logoutToLogin() {
+  await clearSession();
+  redirect("/login");
+}

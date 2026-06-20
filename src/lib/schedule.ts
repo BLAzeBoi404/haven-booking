@@ -3,8 +3,9 @@
 //  Робочі години зберігаються як рядок "HH:MM-HH:MM" у User.workingHours.
 // =====================================================================
 
-/** Парсити "09:00-18:00" → { start: 9, end: 18 }. Безпечний до бруду. */
-export function parseWorkingHours(wh: string): { start: number; end: number } {
+/** Парсити "09:00-18:00" → { start: 9, end: 18 }. Безпечний до undefined/бруду. */
+export function parseWorkingHours(wh: string | null | undefined): { start: number; end: number } {
+  if (!wh || typeof wh !== "string") return { start: 9, end: 18 };
   const m = wh.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
   if (!m) return { start: 9, end: 18 };
   const start = Number(m[1]);
@@ -23,7 +24,7 @@ export function generateSlots(start: number, end: number): string[] {
 }
 
 /** Усі слоти для фахівця (з workingHours). */
-export function slotsFor(workingHours: string): string[] {
+export function slotsFor(workingHours: string | null | undefined): string[] {
   const { start, end } = parseWorkingHours(workingHours);
   return generateSlots(start, end);
 }
