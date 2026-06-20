@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, ChevronDown, LogOut, Menu, X } from "lucide-react";
 import { LANGS, CURRENCY_LIST } from "@/lib/currency";
@@ -20,7 +20,6 @@ export function Header({ user }: { user: SessionUser | null }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [switchingId, setSwitchingId] = useState<string | null>(null);
-  const [isPending, startSwitch] = useTransition();
   const t = getT(lang);
   const onLangChange = setLang;
   const onCurrencyChange = setCurrency;
@@ -34,18 +33,15 @@ export function Header({ user }: { user: SessionUser | null }) {
   };
 
   const doSwitch = (userId: string) => {
-    if (switchingId || isPending) return;
+    if (switchingId) return;
     setSwitchingId(userId);
-    startSwitch(async () => {
-      const res = await switchAccount(userId);
+    switchAccount(userId).then((res) => {
       if (res.ok) {
-        setLinkedAccounts([]);
-        setProfileOpen(false);
-        setMenuOpen(false);
-        window.location.reload();
+        window.location.href = "/";
+        return; // не сбрасываем switchingId — страница всё равно перезагрузится
       }
       setSwitchingId(null);
-    });
+    }).catch(() => setSwitchingId(null));
   };
 
   const roleLabel = (role: string) => {
@@ -145,7 +141,7 @@ export function Header({ user }: { user: SessionUser | null }) {
                             <button
                               key={acc.id}
                               onClick={() => doSwitch(acc.id)}
-                              disabled={isPending}
+                              disabled={!!switchingId}
                               className="w-full text-left px-3 py-2 flex items-center gap-2.5 hover:bg-gray-50 transition-colors disabled:opacity-60"
                             >
                               <Avatar name={acc.name} size="sm" />
@@ -202,7 +198,7 @@ export function Header({ user }: { user: SessionUser | null }) {
                 <button
                   key={acc.id}
                   onClick={() => doSwitch(acc.id)}
-                  disabled={isPending}
+                  disabled={!!switchingId}
                   className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 flex items-center gap-2.5 disabled:opacity-60"
                 >
                   <Avatar name={acc.name} size="sm" />

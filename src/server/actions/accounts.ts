@@ -6,7 +6,6 @@
 
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { prisma } from "../db";
 import { createSession, getOrCreateDeviceId, getSession } from "../session";
 
@@ -64,7 +63,6 @@ export async function switchAccount(targetUserId: string): Promise<{ ok: boolean
   });
 
   await createSession({ id: user.id, email: user.email, name: user.name, role: user.role });
-  revalidatePath("/");
   return { ok: true };
 }
 
