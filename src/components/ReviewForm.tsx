@@ -38,7 +38,7 @@ export function ReviewForm({ serviceId, lang, existing }: { serviceId: string; l
       }
       setErr(res.error);
     } catch {
-      setErr("Сталася помилка. Спробуйте ще раз.");
+      setErr(t.reviewError);
     } finally {
       setPending(false);
     }

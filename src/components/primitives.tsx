@@ -6,7 +6,8 @@
 import { memo } from "react";
 import { Star, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn, initials } from "@/lib/utils";
-import { CAT_CHIP } from "@/lib/currency";
+import { CAT_CHIP, categoryLabel } from "@/lib/currency";
+import { usePrefs } from "./PrefsProvider";
 
 export const Stars = memo(function Stars({ rating, sm }: { rating: number; sm?: boolean }) {
   return (
@@ -45,9 +46,10 @@ export const Avatar = memo(function Avatar({
 });
 
 export function Chip({ cat, className = "", onClick }: { cat: string; className?: string; onClick?: () => void }) {
+  const { lang } = usePrefs();
   return (
     <span onClick={onClick} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined} className={cn("inline-block text-xs font-medium px-2 py-0.5 rounded-full border", CAT_CHIP[cat] || "bg-gray-50 text-gray-600 border-gray-200", onClick && "cursor-pointer", className)}>
-      {cat}
+      {categoryLabel(cat, lang)}
     </span>
   );
 }

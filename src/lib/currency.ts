@@ -3,6 +3,7 @@
 // =====================================================================
 
 import type { Currency } from "@/types";
+import type { Lang } from "@/types";
 
 export const CURRENCIES: Record<Currency, { sym: string; rate: number }> = {
   UAH: { sym: "₴", rate: 41 },
@@ -51,3 +52,29 @@ export const CAT_CHIP: Record<string, string> = {
   "Масаж": "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
   "Різноробочий": "bg-slate-50 text-slate-700 border-slate-200",
 };
+
+/** Переклад назв категорій. Ключ — канонічна (українська) назва з БД. */
+export const CAT_LABELS: Record<string, { uk: string; en: string }> = {
+  "Електрик": { uk: "Електрик", en: "Electrician" },
+  "Сантехнік": { uk: "Сантехнік", en: "Plumber" },
+  "Клінінг": { uk: "Клінінг", en: "Cleaning" },
+  "Ремонт ПК": { uk: "Ремонт ПК", en: "PC Repair" },
+  "Фотограф": { uk: "Фотограф", en: "Photographer" },
+  "Веб-розробник": { uk: "Веб-розробник", en: "Web Developer" },
+  "Дизайнер": { uk: "Дизайнер", en: "Designer" },
+  "Вантажник": { uk: "Вантажник", en: "Mover" },
+  "Юрист": { uk: "Юрист", en: "Lawyer" },
+  "Перекладач": { uk: "Перекладач", en: "Translator" },
+  "Ремонт квартир": { uk: "Ремонт квартир", en: "Apartment Renovation" },
+  "Дизайн інтер'єру": { uk: "Дизайн інтер'єру", en: "Interior Design" },
+  "Репетитор": { uk: "Репетитор", en: "Tutor" },
+  "Масаж": { uk: "Масаж", en: "Massage" },
+  "Різноробочий": { uk: "Різноробочий", en: "Handyman" },
+};
+
+/** Локалізована назва категорії для відображення (фільтрація лишається по канонічному ключу). */
+export function categoryLabel(cat: string, lang: Lang): string {
+  const entry = CAT_LABELS[cat];
+  if (!entry) return cat;
+  return lang === "en" ? entry.en : entry.uk;
+}

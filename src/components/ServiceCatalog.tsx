@@ -5,12 +5,15 @@ import { Search, MapPin, Filter, Users, CheckCircle2, Heart, Zap, ArrowRight, Ch
 import { ServiceCard } from "./ServiceCard";
 import { usePrefs } from "./PrefsProvider";
 import { cn, convertPrice, currencySymbol } from "@/lib/utils";
-import { CURRENCIES } from "@/lib/currency";
+import { CURRENCIES, categoryLabel } from "@/lib/currency";
 import { useDebounce } from "@/lib/useDebounce";
+import { getT } from "@/lib/i18n";
 import type { ServiceWithProvider } from "@/types";
 
 export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }) {
   const { lang, currency } = usePrefs();
+  const t = getT(lang);
+  const sym = currencySymbol(currency);
   const [catF, setCatF] = useState("");
   const [cityF, setCityF] = useState("");
   const [maxP, setMaxP] = useState(0);
@@ -51,10 +54,10 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
 
   const clearAll = () => { setSInput(""); setCInput(""); setCatF(""); setCityF(""); setMaxP(0); setMinR(0); setSortBy("recommended"); };
   const stats = [
-    { Icon: Users, n: "60+ фахівців", c: "bg-emerald-100 text-emerald-700" },
-    { Icon: CheckCircle2, n: "1M+ замовлень", c: "bg-blue-100 text-blue-700" },
-    { Icon: Heart, n: "98% задоволені", c: "bg-rose-100 text-rose-700" },
-    { Icon: Zap, n: "Підтримка 24/7", c: "bg-amber-100 text-amber-700" },
+    { Icon: Users, n: t.stat1, c: "bg-emerald-100 text-emerald-700" },
+    { Icon: CheckCircle2, n: t.stat2, c: "bg-blue-100 text-blue-700" },
+    { Icon: Heart, n: t.stat3, c: "bg-rose-100 text-rose-700" },
+    { Icon: Zap, n: t.stat4, c: "bg-amber-100 text-amber-700" },
   ];
 
   const chipsRef = useRef<HTMLDivElement>(null);
@@ -134,19 +137,19 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
       <section className="bg-emerald-900 pt-24 pb-14 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="display text-3xl sm:text-4xl md:text-[46px] font-bold text-white mb-3 leading-snug">
-            Знайдіть ідеального <span className="text-emerald-300">фахівця</span>
+            {t.heroLine1} <span className="text-emerald-300">{t.heroLine2}</span>
           </h1>
           <p className="text-emerald-200/75 text-sm sm:text-base mb-8 max-w-md mx-auto">
-            Перевірені спеціалісти. Клінінг, ремонт, IT, дизайн та ще 10 категорій.
+            {t.heroSub}
           </p>
           <div className="bg-white rounded-2xl p-1.5 flex flex-col sm:flex-row gap-1.5 max-w-2xl mx-auto shadow-xl shadow-black/20">
             <div className="flex-1 flex items-center gap-2.5 px-4 py-2.5 bg-gray-50 rounded-xl focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-[background-color]">
               <Search className="w-4 h-4 text-emerald-600 shrink-0" />
-              <input value={sInput} onChange={(e) => setSInput(e.target.value)} placeholder="Яку послугу ви шукаєте?" className="w-full bg-transparent outline-none text-sm font-medium placeholder:text-gray-400" />
+              <input value={sInput} onChange={(e) => setSInput(e.target.value)} placeholder={t.searchPh} className="w-full bg-transparent outline-none text-sm font-medium placeholder:text-gray-400" />
             </div>
             <div className="flex-1 flex items-center gap-2.5 px-4 py-2.5 bg-gray-50 rounded-xl focus-within:bg-white transition-[background-color]">
               <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
-              <input value={cInput} onChange={(e) => setCInput(e.target.value)} placeholder="Місто або країна" className="w-full bg-transparent outline-none text-sm font-medium placeholder:text-gray-400" />
+              <input value={cInput} onChange={(e) => setCInput(e.target.value)} placeholder={t.cityPh} className="w-full bg-transparent outline-none text-sm font-medium placeholder:text-gray-400" />
             </div>
           </div>
         </div>
@@ -166,18 +169,18 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
       <section className="max-w-[1400px] mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div>
-            <h2 className="display font-bold text-gray-900">Всі послуги</h2>
-            <p className="text-gray-400 text-sm mt-0.5">{filtered.length} результатів</p>
+            <h2 className="display font-bold text-gray-900">{t.servicesSection}</h2>
+            <p className="text-gray-400 text-sm mt-0.5">{filtered.length} {t.results}</p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowFilters((f) => !f)} className={cn("flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-colors", showFilters ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-700 hover:border-gray-300")}>
-              <Filter className="w-4 h-4" />Фільтри
+              <Filter className="w-4 h-4" />{t.filters}
             </button>
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 outline-none hover:border-gray-300 transition-[border-color] cursor-pointer">
-              <option value="recommended">Рекомендовані</option>
-              <option value="priceAsc">Ціна ↑</option>
-              <option value="priceDesc">Ціна ↓</option>
-              <option value="ratingDesc">Рейтинг ↓</option>
+              <option value="recommended">{t.recommended}</option>
+              <option value="priceAsc">{t.priceAsc}</option>
+              <option value="priceDesc">{t.priceDesc}</option>
+              <option value="ratingDesc">{t.ratingDesc}</option>
             </select>
           </div>
         </div>
@@ -186,43 +189,43 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
           <div className="card p-5 mb-4 slide-up">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Категорія</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{t.category}</label>
                 <select value={catF} onChange={(e) => setCatF(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:border-emerald-400 transition-[border-color]">
-                  <option value="">Всі категорії</option>
-                  {allCats.map((c) => <option key={c} value={c}>{c}</option>)}
+                  <option value="">{t.allCats}</option>
+                  {allCats.map((c) => <option key={c} value={c}>{categoryLabel(c, lang)}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Місто</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{t.city}</label>
                 <select value={cityF} onChange={(e) => setCityF(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:border-emerald-400 transition-[border-color]">
-                  <option value="">Всі міста</option>
+                  <option value="">{t.allCities}</option>
                   {allCities.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Макс ціна: {currencySymbol(currency)}{effectiveMax}</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{t.maxPrice}: {sym}{effectiveMax}</label>
                 <input type="range" min={0} max={maxSlider} step={Math.max(1, Math.round(maxSlider / 50))} value={effectiveMax} onChange={(e) => setMaxP(Number(e.target.value))} style={{ background: `linear-gradient(to right,#059669 ${(effectiveMax / maxSlider) * 100}%,#e5e7eb ${(effectiveMax / maxSlider) * 100}%)` }} className="w-full" />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">Мін рейтинг</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{t.minRating}</label>
                 <div className="flex gap-1.5">
                   {[0, 4, 4.5, 4.8].map((r) => (
                     <button key={r} onClick={() => setMinR(r)} className={cn("flex-1 py-2 rounded-xl border text-xs font-semibold transition-colors", minR === r ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>
-                      {r === 0 ? "Всі" : `${r}+`}
+                      {r === 0 ? t.all : `${r}+`}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
-            <button onClick={clearAll} className="mt-3 text-xs font-semibold text-emerald-700 hover:underline">Скинути</button>
+            <button onClick={clearAll} className="mt-3 text-xs font-semibold text-emerald-700 hover:underline">{t.clear}</button>
           </div>
         )}
 
         <div className="relative mb-5">
-          <button onClick={() => scrollChips(-1)} disabled={!canLeft} aria-label="Попередні категорії" className={cn("flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-gray-200 shadow-md items-center justify-center transition-[opacity,color,border-color] disabled:opacity-0 disabled:pointer-events-none", canLeft ? "text-gray-600 hover:text-emerald-700 hover:border-emerald-300" : "text-gray-300 cursor-default")}>
+          <button onClick={() => scrollChips(-1)} disabled={!canLeft} aria-label={t.prevCats} className={cn("flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-gray-200 shadow-md items-center justify-center transition-[opacity,color,border-color] disabled:opacity-0 disabled:pointer-events-none", canLeft ? "text-gray-600 hover:text-emerald-700 hover:border-emerald-300" : "text-gray-300 cursor-default")}>
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button onClick={() => scrollChips(1)} disabled={!canRight} aria-label="Наступні категорії" className={cn("flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-gray-200 shadow-md items-center justify-center transition-[opacity,color,border-color] disabled:opacity-0 disabled:pointer-events-none", canRight ? "text-gray-600 hover:text-emerald-700 hover:border-emerald-300" : "text-gray-300 cursor-default")}>
+          <button onClick={() => scrollChips(1)} disabled={!canRight} aria-label={t.nextCats} className={cn("flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-gray-200 shadow-md items-center justify-center transition-[opacity,color,border-color] disabled:opacity-0 disabled:pointer-events-none", canRight ? "text-gray-600 hover:text-emerald-700 hover:border-emerald-300" : "text-gray-300 cursor-default")}>
             <ChevronRight className="w-4 h-4" />
           </button>
           <div className="px-1">
@@ -234,11 +237,11 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
               onPointerLeave={endDrag}
               className={cn("flex gap-2 overflow-x-auto no-scrollbar px-1 py-1 select-none", dragging ? "cursor-grabbing" : "cursor-grab")}
               style={{ scrollSnapType: "x proximity", WebkitOverflowScrolling: "touch" }}
-              title="Гортайте колесиком, тягніть або натискайте стрілочки"
+              title={t.scrollHint}
             >
-              <button onClick={(e) => { if (drag.current.moved) { e.preventDefault(); return; } setCatF(""); }} className={cn("px-3.5 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors shrink-0", catF === "" ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>Всі категорії</button>
+              <button onClick={(e) => { if (drag.current.moved) { e.preventDefault(); return; } setCatF(""); }} className={cn("px-3.5 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors shrink-0", catF === "" ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>{t.allCats}</button>
               {allCats.map((c) => (
-                <button key={c} onClick={(e) => { if (drag.current.moved) { e.preventDefault(); return; } setCatF(catF === c ? "" : c); }} className={cn("px-3.5 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors shrink-0", catF === c ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>{c}</button>
+                <button key={c} onClick={(e) => { if (drag.current.moved) { e.preventDefault(); return; } setCatF(catF === c ? "" : c); }} className={cn("px-3.5 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors shrink-0", catF === c ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>{categoryLabel(c, lang)}</button>
               ))}
             </div>
           </div>
@@ -247,9 +250,9 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
         {filtered.length === 0 ? (
           <div className="card p-14 text-center">
             <Search className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-            <h3 className="display font-bold text-gray-800 mb-1">Нічого не знайдено</h3>
-            <p className="text-gray-500 text-sm mb-5">Спробуйте змінити параметри пошуку.</p>
-            <button onClick={clearAll} className="bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-600 transition-colors text-sm">Скинути</button>
+            <h3 className="display font-bold text-gray-800 mb-1">{t.noResults}</h3>
+            <p className="text-gray-500 text-sm mb-5">{t.tryAdjust}</p>
+            <button onClick={clearAll} className="bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-600 transition-colors text-sm">{t.clear}</button>
           </div>
         ) : (
           <>
@@ -259,7 +262,7 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
             {filtered.length > visible && (
               <div className="text-center mt-6">
                 <button onClick={() => setVisible((v) => v + 24)} className="bg-white border border-gray-200 text-gray-700 font-semibold px-7 py-2.5 rounded-xl hover:border-emerald-400 hover:text-emerald-700 transition-[border-color,color] text-sm">
-                  Показати ще ({filtered.length - visible})
+                  {t.showMore} ({filtered.length - visible})
                 </button>
               </div>
             )}
@@ -269,10 +272,10 @@ export function ServiceCatalog({ services }: { services: ServiceWithProvider[] }
 
       <section className="max-w-[1400px] mx-auto px-4 pb-12">
         <div className="bg-emerald-900 rounded-2xl px-8 py-12 text-center">
-          <h2 className="display text-2xl font-bold text-white mb-2">Стати фахівцем</h2>
-          <p className="text-emerald-200/75 text-sm mb-6 max-w-sm mx-auto">Публікуйте свої послуги та отримуйте замовлення від клієнтів.</p>
+          <h2 className="display text-2xl font-bold text-white mb-2">{t.joinSpec}</h2>
+          <p className="text-emerald-200/75 text-sm mb-6 max-w-sm mx-auto">{t.joinSub}</p>
           <a href="/register" className="inline-flex items-center gap-2 bg-white text-emerald-900 font-semibold px-7 py-3 rounded-xl hover:bg-emerald-50 transition-colors text-sm">
-            Зареєструватись безкоштовно <ArrowRight className="w-4 h-4" />
+            {t.registerFree} <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </section>
