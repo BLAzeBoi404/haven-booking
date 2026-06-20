@@ -15,6 +15,7 @@ import { createService, updateService, deleteService, updateProviderProfile } fr
 import type { Lang, Currency, ServiceCardItem } from "@/types";
 import { getT } from "@/lib/i18n";
 import { convertPrice, currencySymbol } from "@/lib/utils";
+import { categoryLabel } from "@/lib/currency";
 import { firstImage } from "@/lib/images";
 
 export function ProviderEditor({
@@ -67,7 +68,7 @@ export function ProviderEditor({
   };
 
   const del = async (id: string) => {
-    if (!confirm("Видалити послугу?")) return;
+    if (!confirm(t.confirmDeleteService)) return;
     await deleteService(id);
     setToast(t.svcDeleted);
     setTimeout(() => location.reload(), 600);
@@ -99,7 +100,7 @@ export function ProviderEditor({
             <div>
               <label className="text-xs font-semibold text-gray-500 mb-1 block">{t.specLabel}</label>
               <select value={profForm.specialization} onChange={(e) => setProfForm({ ...profForm, specialization: e.target.value })} className={inp}>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map((c) => <option key={c} value={c}>{categoryLabel(c, lang)}</option>)}
               </select>
             </div>
             <div>
@@ -152,7 +153,7 @@ export function ProviderEditor({
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-2">{t.specLabel}</label>
               <select value={profForm.specialization} onChange={(e) => setProfForm({ ...profForm, specialization: e.target.value })} className={inp}>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map((c) => <option key={c} value={c}>{categoryLabel(c, lang)}</option>)}
               </select>
             </div>
             <div>

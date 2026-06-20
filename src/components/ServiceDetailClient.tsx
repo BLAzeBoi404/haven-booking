@@ -155,7 +155,7 @@ export function ServiceDetailClient({
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Stars rating={r.rating} sm />
-                        <span className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString("uk-UA")}</span>
+                        <span className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString(lang === "en" ? "en-US" : "uk-UA")}</span>
                       </div>
                     </div>
                     <p className="text-sm text-gray-600 leading-relaxed pl-9">{r.text}</p>
@@ -202,15 +202,15 @@ export function ServiceDetailClient({
 
       {lightbox && (
         <div className="fixed inset-0 z-[600] bg-black/90 flex items-center justify-center fade-in" onClick={() => setLightbox(false)}>
-          <button onClick={(e) => { e.stopPropagation(); setLightbox(false); }} aria-label="Закрити" className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <button onClick={(e) => { e.stopPropagation(); setLightbox(false); }} aria-label={t.close} className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
             <X className="w-6 h-6" />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); goImg(-1); }} aria-label="Попереднє" className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <button onClick={(e) => { e.stopPropagation(); goImg(-1); }} aria-label={t.prev} className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={images[imgIdx]} alt="" onClick={(e) => e.stopPropagation()} className="max-w-[92vw] max-h-[86vh] object-contain rounded-lg" />
-          <button onClick={(e) => { e.stopPropagation(); goImg(1); }} aria-label="Наступне" className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <button onClick={(e) => { e.stopPropagation(); goImg(1); }} aria-label={t.next} className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
             <ChevronRight className="w-6 h-6" />
           </button>
           <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-white/10 text-white text-xs font-medium px-3 py-1 rounded-full">
