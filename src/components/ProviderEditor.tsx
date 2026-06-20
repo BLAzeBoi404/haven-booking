@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Edit, Trash2, X, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, X, Upload, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Spinner } from "./primitives";
 import { Chip } from "./primitives";
@@ -135,7 +135,7 @@ export function ProviderEditor({
 
       {showForm && (
         <div className="card p-5 mb-5 border-2 border-emerald-200 slide-up">
-          <h3 className="display font-bold text-gray-900 mb-4 text-sm">{editId ? "Редагування" : "Нова послуга"}</h3>
+          <h3 className="display font-bold text-gray-900 mb-4 text-sm">{editId ? t.editTitle : t.newService}</h3>
           <div className="space-y-3">
             <div>
               <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder={t.svcTitle} className={formErr.title ? inpErr : inp} />
@@ -146,7 +146,7 @@ export function ProviderEditor({
               {formErr.description && <p className="text-rose-500 text-xs mt-1">{formErr.description.join(", ")}</p>}
             </div>
             <div>
-              <input type="number" min={1} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder={t.svcPrice} className={formErr.priceUSD ? inpErr : inp} />
+              <input type="number" min={1} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder={`${t.svcPrice} (${sym})`} className={formErr.priceUSD ? inpErr : inp} />
               {formErr.priceUSD && <p className="text-rose-500 text-xs mt-1">{formErr.priceUSD.join(", ")}</p>}
             </div>
             <div>
@@ -156,12 +156,12 @@ export function ProviderEditor({
               </select>
             </div>
             <div>
-              <p className="text-xs text-gray-500 font-medium mb-2">Фото ({form.images.length}/4)</p>
+              <p className="text-xs text-gray-500 font-medium mb-2">{t.photos} ({form.images.length}/10)</p>
               <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-emerald-300 bg-emerald-50 text-emerald-700 text-sm font-semibold cursor-pointer hover:bg-emerald-100 transition-colors w-max">
                 <Upload className="w-4 h-4" />{t.uploadPhoto}
                 <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                   const file = e.target.files?.[0];
-                  if (file && form.images.length < 4) {
+                  if (file && form.images.length < 10) {
                     // Спрощене завантаження: локальний dataURL для демо.
                     // У продакшені — Cloudinary/CDN, як описано в §3.7.
                     const reader = new FileReader();
@@ -196,15 +196,23 @@ export function ProviderEditor({
       {/* Список послуг */}
       {services.length === 0 ? (
         <div className="card p-12 text-center">
-          <p className="text-gray-500 text-sm">Послуг поки немає.</p>
+          <p className="text-gray-500 text-sm">{t.emptyServices}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {services.map((sv) => (
+          {services.map((sv) => {
+            const svImg = firstImage(sv.images, sv.category);
+            return (
             <a key={sv.id} href={`/services/${sv.id}`} className="card card-hover overflow-hidden cursor-pointer group relative">
               <div className="h-40 overflow-hidden bg-gray-100 relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={firstImage(sv.images, sv.category)} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                {svImg ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={svImg} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                    <ImageIcon className="w-10 h-10 text-gray-300" />
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <Chip cat={sv.category} className="mb-2" />
@@ -216,7 +224,8 @@ export function ProviderEditor({
                 <button onClick={() => del(sv.id)} className="bg-white p-1.5 rounded-lg shadow-sm text-gray-600 hover:text-rose-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
               </div>
             </a>
-          ))}
+            );
+          })}
         </div>
       )}
       {/* providerId використовується неявно через сесію у Server Actions */}

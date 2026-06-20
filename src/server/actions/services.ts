@@ -11,8 +11,6 @@ import { requireRole } from "../auth-guard";
 import { serviceSchema } from "@/lib/validations";
 import { Role } from "@prisma/client";
 
-const DEFAULT_IMG = "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=900";
-
 export async function createService(input: unknown) {
   const user = await requireRole(Role.PROVIDER);
   const parsed = serviceSchema.safeParse(input);
@@ -32,7 +30,7 @@ export async function createService(input: unknown) {
       description,
       priceUSD,
       category,
-      images: images.length ? images : [DEFAULT_IMG],
+      images,
     },
   });
   revalidatePath(`/providers/${user.id}`);
@@ -62,7 +60,7 @@ export async function updateService(serviceId: string, input: unknown) {
       description,
       priceUSD,
       category,
-      images: images.length ? images : [DEFAULT_IMG],
+      images,
     },
   });
   revalidatePath(`/providers/${user.id}`);

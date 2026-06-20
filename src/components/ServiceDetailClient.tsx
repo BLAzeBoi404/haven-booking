@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ChevronLeft, ShieldCheck, Clock, Award, User, MapPin, Phone, Mail, ChevronRight, X, ZoomIn } from "lucide-react";
+import { ChevronLeft, ShieldCheck, Clock, Award, User, MapPin, Phone, Mail, ChevronRight, X, ZoomIn, ImageIcon } from "lucide-react";
 import { cn, convertPrice, currencySymbol } from "@/lib/utils";
 import { buildGallery } from "@/lib/images";
 import { Stars, Chip, Avatar } from "./primitives";
@@ -29,6 +29,7 @@ export function ServiceDetailClient({
   const price = convertPrice(service.priceUSD, currency);
 
   const images = buildGallery(service.images, service.category, 10);
+  const hasImages = images.length > 0;
   const [imgIdx, setImgIdx] = useState(0);
   const [showBook, setShowBook] = useState(false);
   const [lightbox, setLightbox] = useState(false);
@@ -64,23 +65,29 @@ export function ServiceDetailClient({
           <div className="lg:col-span-2 space-y-5">
             <div className="card overflow-hidden">
               <div className="relative h-64 sm:h-80 bg-gray-100 overflow-hidden group">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={images[imgIdx]} alt="" className="w-full h-full object-cover transition-transform duration-500" />
+                {hasImages ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={images[imgIdx]} alt="" className="w-full h-full object-cover transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                    <ImageIcon className="w-16 h-16 text-gray-300" />
+                  </div>
+                )}
                 <Chip cat={service.category} className="absolute top-3 left-3" />
                 {provider.verified && (
                   <span className="absolute top-3 right-3 bg-white text-emerald-700 text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" />{t.verified}
                   </span>
                 )}
-                {images.length > 1 && (
+                {hasImages && images.length > 1 && (
                   <>
-                    <button onClick={() => goImg(-1)} aria-label="Попереднє фото" className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700 transition-colors opacity-0 group-hover:opacity-100">
+                    <button onClick={() => goImg(-1)} aria-label={t.prevPhoto} className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700 transition-colors opacity-0 group-hover:opacity-100">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={() => goImg(1)} aria-label="Наступне фото" className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700 transition-colors opacity-0 group-hover:opacity-100">
+                    <button onClick={() => goImg(1)} aria-label={t.nextPhoto} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700 transition-colors opacity-0 group-hover:opacity-100">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <button onClick={() => setLightbox(true)} aria-label="Збільшити фото" className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700 transition-colors opacity-0 group-hover:opacity-100">
+                    <button onClick={() => setLightbox(true)} aria-label={t.zoomPhoto} className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700 transition-colors opacity-0 group-hover:opacity-100">
                       <ZoomIn className="w-5 h-5" />
                     </button>
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/55 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
@@ -89,7 +96,7 @@ export function ServiceDetailClient({
                   </>
                 )}
               </div>
-              {images.length > 1 && (
+              {hasImages && images.length > 1 && (
                 <div className="flex gap-2 p-3 overflow-x-auto no-scrollbar bg-gray-50 border-t border-gray-100">
                   {images.map((img, i) => (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -108,17 +115,23 @@ export function ServiceDetailClient({
                   </Link>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Stars rating={Number(avg)} />
-                  <span className="font-bold text-gray-900">{avg}</span>
-                  <span className="text-gray-400 text-sm">({reviews.length})</span>
+                  {reviews.length > 0 ? (
+                    <>
+                      <Stars rating={Number(avg)} />
+                      <span className="font-bold text-gray-900">{avg}</span>
+                      <span className="text-gray-400 text-sm">({reviews.length})</span>
+                    </>
+                  ) : (
+                    <span className="text-gray-400 text-sm">{t.noReviews}</span>
+                  )}
                 </div>
               </div>
               <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
               <div className="grid grid-cols-3 gap-3 mt-5">
                 {[
-                  { Icon: ShieldCheck, color: "text-emerald-600", bg: "bg-emerald-50", title: "Безпечна угода", desc: "Оплата після виконання" },
-                  { Icon: Clock, color: "text-blue-600", bg: "bg-blue-50", title: "Підтримка", desc: "Допоможемо вирішити" },
-                  { Icon: Award, color: "text-amber-600", bg: "bg-amber-50", title: "Гарантія", desc: "Відповідальність виконавця" },
+                  { Icon: ShieldCheck, color: "text-emerald-600", bg: "bg-emerald-50", title: t.safeDeal, desc: t.safeDealDesc },
+                  { Icon: Clock, color: "text-blue-600", bg: "bg-blue-50", title: t.supportCard, desc: t.supportCardDesc },
+                  { Icon: Award, color: "text-amber-600", bg: "bg-amber-50", title: t.guarantee, desc: t.guaranteeDesc },
                 ].map(({ Icon, color, bg, title, desc }) => (
                   <div key={title} className={cn(bg, "rounded-xl p-3")}>
                     <Icon className={cn("w-5 h-5 mb-2", color)} />
@@ -130,7 +143,7 @@ export function ServiceDetailClient({
             </div>
 
             <div className="card p-6">
-              <h2 className="display font-bold text-gray-900 mb-4">Відгуки{reviews.length > 0 ? ` (${reviews.length})` : ""}</h2>
+              <h2 className="display font-bold text-gray-900 mb-4">{t.reviewsLabel}{reviews.length > 0 ? ` (${reviews.length})` : ""}</h2>
               <ReviewForm serviceId={service.id} lang={lang} existing={user ? reviews.find((r) => r.authorId === user.id) ?? null : null} />
               <div className="space-y-4">
                 {reviews.map((r) => (
@@ -148,7 +161,7 @@ export function ServiceDetailClient({
                     <p className="text-sm text-gray-600 leading-relaxed pl-9">{r.text}</p>
                   </div>
                 ))}
-                {reviews.length === 0 && <p className="text-sm text-gray-400 italic">Ще немає відгуків.</p>}
+                {reviews.length === 0 && <p className="text-sm text-gray-400 italic">{t.noReviews}</p>}
               </div>
             </div>
           </div>
@@ -164,8 +177,14 @@ export function ServiceDetailClient({
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm text-gray-900 truncate">{provider.name}</p>
                   <div className="flex items-center gap-1">
-                    <Stars rating={provider.rating} sm />
-                    <span className="text-xs text-gray-500">{provider.rating.toFixed(1)}</span>
+                    {provider.reviewsCount > 0 ? (
+                      <>
+                        <Stars rating={provider.rating} sm />
+                        <span className="text-xs text-gray-500">{provider.rating.toFixed(1)}</span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-500">{t.noReviews}</span>
+                    )}
                   </div>
                 </div>
                 <ChevronRightIcon />
@@ -173,8 +192,8 @@ export function ServiceDetailClient({
               <button onClick={() => { if (!user) { window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`; return; } setShowBook(true); }} className="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition-colors mb-2 display text-sm">{t.bookNow}</button>
               <div className="space-y-2.5 pt-4 border-t border-gray-100">
                 {provider.phone && <div className="flex items-center gap-2.5 text-sm text-gray-600"><Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{provider.phone}</div>}
-                <div className="flex items-center gap-2.5 text-sm text-gray-600"><Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />Написати через форму</div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600"><Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />Відповідає за 1–2 год</div>
+                <div className="flex items-center gap-2.5 text-sm text-gray-600"><Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{t.writeForm}</div>
+                <div className="flex items-center gap-2.5 text-sm text-gray-600"><Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{t.respondsIn}</div>
               </div>
             </div>
           </div>

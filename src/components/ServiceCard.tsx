@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Star, MapPin, ShieldCheck, ArrowRight } from "lucide-react";
+import { Star, MapPin, ShieldCheck, ArrowRight, ImageIcon } from "lucide-react";
 import { cn, convertPrice, currencySymbol } from "@/lib/utils";
 import { Chip } from "./primitives";
 import { firstImage } from "@/lib/images";
@@ -10,18 +10,25 @@ export function ServiceCard({ s, lang, currency }: { s: ServiceWithProvider; lan
   const t = getT(lang);
   const sym = currencySymbol(currency);
   const price = convertPrice(s.priceUSD, currency);
-  // Стабільний, але різний для сусідніх карток фото — щоб у тій самій
-  // категорії (напр. сантехніки) картки не виглядали однаково.
   const img = firstImage(s.images, s.category, hashVariant(s.id));
+  const hasImage = !!img;
 
   return (
     <Link href={`/services/${s.id}`} className="card card-hover overflow-hidden cursor-pointer group flex flex-col block">
       <div className="relative overflow-hidden bg-gray-100" style={{ aspectRatio: "16/10" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={img} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        <div className="absolute top-2.5 right-2.5 bg-white px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 shadow-sm">
-          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{s.rating}
-        </div>
+        {hasImage ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={img} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+            <ImageIcon className="w-10 h-10 text-gray-300" />
+          </div>
+        )}
+        {s.reviewsCount > 0 && (
+          <div className="absolute top-2.5 right-2.5 bg-white px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 shadow-sm">
+            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{s.rating}
+          </div>
+        )}
         {s.providerVerified && (
           <div className="absolute top-2.5 left-2.5">
             <span className="bg-white text-emerald-700 text-xs font-semibold px-1.5 py-0.5 rounded-full border border-emerald-100">

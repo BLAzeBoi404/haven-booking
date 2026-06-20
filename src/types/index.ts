@@ -35,6 +35,7 @@ export interface ServiceWithProvider {
   category: string;
   images: string[];
   rating: number;
+  reviewsCount: number;
   providerId: string;
   providerName: string;
   providerLocation: string;

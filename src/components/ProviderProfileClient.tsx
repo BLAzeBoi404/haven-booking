@@ -5,7 +5,8 @@
 
 "use client";
 
-import { CheckCircle, MapPin, Phone } from "lucide-react";
+import { CheckCircle, MapPin, Phone, ImageIcon } from "lucide-react";
+import { cn, convertPrice, currencySymbol } from "@/lib/utils";
 import { Avatar, Stars } from "./primitives";
 import { ProviderEditor } from "./ProviderEditor";
 import { usePrefs } from "./PrefsProvider";
@@ -25,6 +26,7 @@ export function ProviderProfileClient({
 }) {
   const { lang, currency } = usePrefs();
   const t = getT(lang);
+  const sym = currencySymbol(currency);
   const isOwner = user?.id === provider.id && user?.role === "PROVIDER";
 
   return (
@@ -42,15 +44,21 @@ export function ProviderProfileClient({
               <p className="text-emerald-700 text-sm font-medium mb-1">{provider.specialization}</p>
               <p className="text-gray-500 text-xs flex justify-center items-center gap-1 mb-3"><MapPin className="w-3 h-3" />{provider.location}</p>
               <div className="flex items-center justify-center gap-1.5 mb-4">
-                <Stars rating={provider.rating} />
-                <span className="font-bold text-gray-900 text-sm">{provider.rating.toFixed(1)}</span>
+                {provider.reviewsCount > 0 ? (
+                  <>
+                    <Stars rating={provider.rating} />
+                    <span className="font-bold text-gray-900 text-sm">{provider.rating.toFixed(1)}</span>
+                  </>
+                ) : (
+                  <span className="text-gray-400 text-sm">{t.noReviews}</span>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-2 text-left mb-4">
                 {[
                   [t.experience, provider.experience || "—"],
                   [t.completedJobs, String(provider.completedJobs)],
                   [t.successRate, `${provider.successRate}%`],
-                  ["Відгуків", String(provider.reviewsCount)],
+                  [t.reviewsCount, String(provider.reviewsCount)],
                 ].map(([label, val]) => (
                   <div key={label} className="bg-gray-50 rounded-lg p-2.5 border border-gray-100">
                     <div className="font-bold text-gray-900 text-sm">{val}</div>
@@ -83,22 +91,31 @@ export function ProviderProfileClient({
               <>
                 <h2 className="display font-bold text-gray-900 mb-5">{t.services}</h2>
                 {services.length === 0 ? (
-                  <div className="card p-12 text-center"><p className="text-gray-500 text-sm">Послуг поки немає.</p></div>
+                  <div className="card p-12 text-center"><p className="text-gray-500 text-sm">{t.emptyServices}</p></div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {services.map((sv) => (
+                    {services.map((sv) => {
+                      const svImg = firstImage(sv.images, sv.category, hashVariant(sv.id));
+                      return (
                       <a key={sv.id} href={`/services/${sv.id}`} className="card card-hover overflow-hidden cursor-pointer group">
                         <div className="h-40 overflow-hidden bg-gray-100 relative">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={firstImage(sv.images, sv.category, hashVariant(sv.id))} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          {svImg ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={svImg} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                              <ImageIcon className="w-10 h-10 text-gray-300" />
+                            </div>
+                          )}
                         </div>
                         <div className="p-4">
                           <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-emerald-700 transition-colors">{sv.title}</h4>
                           <p className="text-gray-400 text-xs line-clamp-2 mb-2">{sv.description}</p>
-                          <p className="display font-bold text-gray-900">{sv.priceUSD}$</p>
+                          <p className="display font-bold text-gray-900">{sym}{convertPrice(sv.priceUSD, currency)}</p>
                         </div>
                       </a>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </>

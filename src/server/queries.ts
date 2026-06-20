@@ -104,6 +104,7 @@ export const getServicesWithProviders = unstable_cache(
         provider: {
           select: { name: true, location: true, verified: true },
         },
+        _count: { select: { reviews: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -115,6 +116,7 @@ export const getServicesWithProviders = unstable_cache(
       category: s.category,
       images: s.images,
       rating: Number(s.rating),
+      reviewsCount: s._count.reviews,
       providerId: s.providerId,
       providerName: s.provider.name,
       providerLocation: s.provider.location ?? "—",

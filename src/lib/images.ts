@@ -286,10 +286,10 @@ export function galleryImages(category: string, count = PER_CAT): string[] {
   return out;
 }
 
-/** Перше фото: власне (якщо є) або тематичне з каталогу. variant для стабільного різноманіття. */
+/** Перше фото: власне (якщо є), інакше порожній рядок — UI сам рендерить плейсхолдер. */
 export function firstImage(images: string[] | null | undefined, category: string, variant = 0): string {
   if (images && images.length > 0 && images[0]) return images[0];
-  return cardImage(category, variant);
+  return "";
 }
 
 /**
@@ -301,25 +301,12 @@ export function cardImageFor(id: string, category: string): string {
 }
 
 /**
- * Галерея деталі послуги: спочатку власні фото фахівця, потім добірка
- * ТЕМАТИЧНИХ фото тієї ж категорії, щоб загалом було count різних кадрів.
+ * Галерея деталі послуги: ТІЛЬКІ власні фото фахівця.
+ * Рандомні Unsplash-фото НЕ додаються.
  */
 export function buildGallery(images: string[] | null | undefined, category: string, count = PER_CAT): string[] {
   const own = images?.filter(Boolean) ?? [];
-  const out: string[] = [...own];
-  if (out.length < count) {
-    const fill = galleryImages(category, count);
-    const seen = new Set(out.map((s) => s.split("?")[0]));
-    for (const f of fill) {
-      if (out.length >= count) break;
-      const key = f.split("?")[0];
-      if (!seen.has(key)) {
-        seen.add(key);
-        out.push(f);
-      }
-    }
-  }
-  return out.slice(0, Math.max(count, own.length));
+  return own.slice(0, Math.max(count, own.length));
 }
 
 export function providerFullImage(category: string, variant = 0): string {

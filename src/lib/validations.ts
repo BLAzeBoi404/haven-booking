@@ -33,7 +33,7 @@ export const serviceSchema = z.object({
   title: z.string().trim().min(3, "Мінімум 3 символи").max(80, "Максимум 80 символів"),
   description: z.string().trim().min(10, "Мінімум 10 символів").max(600, "Максимум 600 символів"),
   priceUSD: z.coerce.number().min(1, "Мінімальна ціна 1").max(100000),
-  images: z.array(z.string().url()).max(4).default([]),
+  images: z.array(z.string().min(1)).max(10).default([]),
   category: z.string().min(1),
 });
 
